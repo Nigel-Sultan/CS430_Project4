@@ -1,0 +1,32 @@
+Project 4
+
+* property: reflectivity 0.0 to 1.0
+* property: refractivity 0.0 to 1.0
+* property: ior (index of refraction)
+* assume the raytracing depth is limited to 7
+
+//Vertex shader (this is not C code; this is GLSL)
+
+char* vertex_shader_src = 
+"attribute vec4 Position;\n"			//attribute is modifier; vec4 is type (vector of 4 tuples floats); Position is variable name
+"attribute vec4 SourceColor;\n"			//vec4 bc RGBA
+"\n"
+"varying vec4 DestinationColor;\n"		//varying is output attribute
+"\n
+"void main(void){\n"					//pass in void to express no arguments being passed in
+	"DestinationColor = SourceColor;\n"
+	"gl_Position = Position;\n"			//gl_Position is built-in variable
+"}\n";
+
+//Fragment shader(GLSL code)
+
+//lowp - lower precision but faster (framerate)
+//mediump - middle ground
+//highp - highest precision but slower
+
+char* fragment_shader_src = 
+"varying lowp vec4 DestinationColor;\n"		//variable name and type has to match that of vertex shader
+"\n"
+"void main(void){\n"
+	"gl_FragColor = DestinationColor;\n"
+"}\n"
