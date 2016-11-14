@@ -13,12 +13,18 @@ typedef struct{
     		double specular_color[3];
       		double position[3];
       		double radius;
+      		double reflectivity;
+      		double refractivity;
+      		double ior;
     	} sphere;
     	struct {
     		double diffuse_color[3];
     		double specular_color[3];
       		double position[3];
       		double normal[3];
+      		double reflectivity;
+      		double refractivity;
+      		double ior;
     	} plane;
     	struct {
     		double color[3];
