@@ -96,7 +96,10 @@ void read_scene(char* filename, Object** objects) {
 					(strcmp(key, "radial-a0") == 0) ||
 					(strcmp(key, "angular-a0") == 0) ||
 					(strcmp(key, "theta") == 0) ||
-					(strcmp(key, "ns") == 0)) {
+					(strcmp(key, "ns") == 0) || 
+					(strcmp(key, "reflectivity") == 0) || 
+					(strcmp(key, "refractivity") == 0) || 
+					(strcmp(key, "ior") == 0)) {
                         double value = next_number(json);
                         if (strcmp(key, "width") == 0){
                             objects[i]->camera.width = value;
@@ -122,8 +125,32 @@ void read_scene(char* filename, Object** objects) {
 						else if(strcmp(key, "theta") == 0){
 							objects[i]->light.theta = value;
 						}
-						else{
+						else if(strcmp(key, "ns") == 0){
 							objects[i]->light.ns = value;
+						}
+						else if(strcmp(key, "reflectivity") == 0){
+							if (strcmp(temp, "sphere") == 0){
+								objects[i]->sphere.reflectivity = value;
+							}
+							else if	(strcmp(temp, "plane") == 0){
+								objects[i]->plane.reflectivity = value;
+							}
+						}
+						else if(strcmp(key, "refractivity") == 0){
+							if (strcmp(temp, "sphere") == 0){
+								objects[i]->sphere.refractivity = value;
+							}
+							else if	(strcmp(temp, "plane") == 0){
+								objects[i]->plane.refractivity = value;
+							}
+						}
+						else if(strcmp(key, "ior") == 0){
+							if (strcmp(temp, "sphere") == 0){
+								objects[i]->sphere.ior = value;
+							}
+							else if	(strcmp(temp, "plane") == 0){
+								objects[i]->plane.ior = value;
+							}
 						}
                     }
                     else if ((strcmp(key, "diffuse_color") == 0) ||
