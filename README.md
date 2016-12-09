@@ -6,3 +6,5 @@ This program will build off the previous one by adding reflection and refraction
 
 The program (raytrace) has this usage pattern on the command line:
 raytrace width height input.json output.ppm
+
+Updated Files for consistent formatting throughtout all of them
