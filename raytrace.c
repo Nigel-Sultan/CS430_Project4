@@ -646,6 +646,8 @@ double* recursive_shoot(int object_num, double* Rd, double* Ro, Object** objects
 					color[0] += fr*fa*(diff[0] + spec[0]);
 					color[1] += fr*fa*(diff[1] + spec[1]);
 					color[2] += fr*fa*(diff[2] + spec[2]);
+					
+					double new_Rd[3];
 
 					double new_Ro[3];
 					new_Ro[0] = Ron[0];
@@ -666,15 +668,22 @@ double* recursive_shoot(int object_num, double* Rd, double* Ro, Object** objects
 					refraction_color[1] = 0;
 					refraction_color[2] = 0;
 					
-					double new_Rd[3];
-					
-					if (reflectivity > 0) 
+					if(reflectivity > 0)
 					{
-						new_Rd[0] = R[0];
-						new_Rd[1] = R[1];
-						new_Rd[2] = R[2];
+						if(reflectivity > 1)
+						{
+							reflectivity = 1;
+						}
+					
+						double NRd = N[0]*Rd[0]+N[1]*Rd[1]+N[2]*Rd[2];
+						
+						
+						new_Rd[0] = Rd[0]-2*NRd*N[0];
+						new_Rd[1] = Rd[1]-2*NRd*N[1];
+						new_Rd[2] = Rd[2]-2*NRd*N[2];
 						
 						double offset[3] = { 0, 0, 0 };
+						
 						offset[0] = new_Rd[0] * 0.0001;
 						offset[1] = new_Rd[1] * 0.0001;
 						offset[2] = new_Rd[2] * 0.0001;
@@ -687,8 +696,18 @@ double* recursive_shoot(int object_num, double* Rd, double* Ro, Object** objects
 						
 						reflection_color = recursive_shoot(object_num, new_Rd, new_Ro, objects, recursive_depth + 1, inside_sphere);
 					}
+						
 					if (refractivity > 0) 
 					{
+						if(refractivity > 1)
+						{
+							refractivity = 1;
+						}
+						if(ior <= 0)
+						{
+							fprintf(stderr, "Error: IOR cannot be negative!\n");
+							exit(1);
+						}
 						if (inside_sphere == 1) 
 						{
 							ior = 1 / ior;
@@ -707,16 +726,16 @@ double* recursive_shoot(int object_num, double* Rd, double* Ro, Object** objects
 						
 						double sinPhi, cosPhi;
 				
-						a[0] = N[1] * L[2] - N[2] * L[1];
-						a[1] = N[2] * L[0] - N[0] * L[2];
-						a[2] = N[0] * L[1] - N[1] * L[0];
+						a[0] = N[1] * Rd[2] - N[2] * Rd[1];
+						a[1] = N[2] * Rd[0] - N[0] * Rd[2];
+						a[2] = N[0] * Rd[1] - N[1] * Rd[0];
 						normalize(a);
 						
 						b[0] = a[1] * N[2] - a[2] * N[1];
 						b[1] = a[2] * N[0] - a[0] * N[2];
 						b[2] = a[0] * N[1] - a[1] * N[0];
 						
-						sinPhi = ior * (L[0] * b[0] + L[1] * b[1] + L[2] * b[2]);
+						sinPhi = ior * (Rd[0] * b[0] + Rd[1] * b[1] + Rd[2] * b[2]);
 						cosPhi = sqrt(1 - sqr(sinPhi));
 						
 						new_Rd[0] = -N[0] * cosPhi + b[0] * sinPhi;
@@ -736,6 +755,13 @@ double* recursive_shoot(int object_num, double* Rd, double* Ro, Object** objects
 						
 						refraction_color = recursive_shoot(object_num, new_Rd, new_Ro, objects, recursive_depth + 1, inside_sphere);
 					}
+					if(reflectivity < 0){
+						reflectivity = 0;
+					}
+					if(refractivity < 0){
+						refractivity = 0;
+					}
+					
 					color[0] = (1 - reflectivity - refractivity) * color[0] + refraction_color[0] * refractivity + reflection_color[0] * reflectivity;
 					color[1] = (1 - reflectivity - refractivity) * color[1] + refraction_color[1] * refractivity + reflection_color[1] * reflectivity;
 					color[2] = (1 - reflectivity - refractivity) * color[2] + refraction_color[2] * refractivity + reflection_color[2] * reflectivity;
